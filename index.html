@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - {{ config.store_name }}</title>
+    
+    <!-- Google Font FIRST -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+    
+    <!-- Custom Styles BEFORE Foxy Styles to allow overrides -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'EB Garamond', serif !important;
+            background: #DBD8D1 !important;
+            color: #1E2321 !important;
+            line-height: 1.4;
+        }
+
+        /* Hide the default Foxy checkout completely */
+        #fc .fc-checkout,
+        #fc .fc-container,
+        #fc-checkout-container,
+        .fc-checkout__main,
+        .fc-checkout__sidebar,
+        .fc-checkout-container {
+            display: none !important;
+        }
+
+        /* Show only our custom checkout */
+        .custom-checkout-container {
+            display: block !important;
+            width: 100%;
+            min-height: 100vh;
+            padding: 20px 60px 30px;
+            background: #DBD8D1;
+        }
+
+        /* Header */
+        .checkout-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            height: 68px;
+        }
+
+        .logo {
+            width: 200px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 500;
+            color: #1E2321;
+            text-decoration: none;
+        }
+
+        .all-products-btn {
+            padding: 12px 20px;
+            background: #D3E4E7;
+            border: 1px solid #817F75;
+            border-radius: 5px;
+            color: #1E2321;
+            font-size: 20px;
+            font-family: 'EB Garamond', serif;
+            font-weight: 500;
+            text-transform: uppercase;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .all-products-btn:hover {
+            background: #c0d4d7;
+            transform: translateY(-1px);
+        }
+
+        /* Main Layout */
+        .checkout-content {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+
+        .checkout-main {
+            flex: 1;
+            max-width: 687px;
+            background: #F6F5F4;
+            border-radius: 5px;
+            padding: 30px 30px 60px;
+        }
+
+        .checkout-sidebar {
+            width: 420px;
+            background: #F6F5F4;
+            border-radius: 5px;
+            padding: 30px;
+        }
+
+        /* Section spacing */
+        .checkout-section {
+            margin-bottom: 60px;
+        }
+
+        .checkout-section:last-of-type {
+            margin-bottom: 40px;
+        }
+
+        /* Section Headers */
+        .section-header {
+            padding-bottom: 10px;
+            border-bottom: 0.5px solid #1E2321;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 30px;
+            font-style: italic;
+            font-weight: 400;
+            font-family: 'EB Garamond', serif;
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            color: rgba(30, 35, 33, 0.80);
+            font-size: 16px;
+            font-family: 'EB Garamond', serif;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 10px;
+            border-radius: 5px;
+            border: 0.5px solid rgba(30, 35, 33, 0.50);
+            background: white;
+            font-family: 'EB Garamond', serif;
+            font-size: 18px;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #1E2321;
+        }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        /* Checkbox */
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            min-width: 20px;
+            border: 0.5px solid rgba(30, 35, 33, 0.50);
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 2px;
+        }
+
+        .checkbox-group label {
+            color: rgba(30, 35, 33, 0.80);
+            font-size: 16px;
+            cursor: pointer;
+            font-family: 'EB Garamond', serif;
+        }
+
+        /* Coupon Section */
+        .coupon-section {
+            margin-top: 30px;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 5px;
+        }
+
+        .coupon-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .coupon-button {
+            padding: 10px 20px;
+            background: #D3E4E7;
+            border: 1px solid #817F75;
+            border-radius: 5px;
+            color: #1E2321;
+            font-size: 16px;
+            font-family: 'EB Garamond', serif;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .coupon-button:hover {
+            background: #c0d4d7;
+        }
+
+        .applied-coupons {
+            margin-top: 15px;
+        }
+
+        .applied-coupon {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background: #f0f0f0;
+            border-radius: 3px;
+            margin-bottom: 5px;
+        }
+
+        .remove-coupon {
+            color: #d32f2f;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* Hidden Elements */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Submit Button */
+        .submit-button {
+            width: 100%;
+            padding: 12px 10px;
+            background: #D3E4E7;
+            border: 1px solid #817F75;
+            border-radius: 5px;
+            color: #1E2321;
+            font-size: 20px;
+            font-weight: 500;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'EB Garamond', serif;
+        }
+
+        .submit-button:hover:not(:disabled) {
+            background: #c0d4d7;
+            transform: translateY(-1px);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .security-note {
+            text-align: center;
+            color: #1E2321;
+            font-size: 14px;
+            margin-top: 15px;
+            font-family: 'EB Garamond', serif;
+        }
+
+        /* Order Summary */
+        .order-items-count {
+            font-size: 20px;
+            margin-bottom: 30px;
+            font-family: 'EB Garamond', serif;
+        }
+
+        /* Cart Items */
+        .cart-item {
+            background: #D3E4E7;
+            border-radius: 10px;
+            padding: 20px 10px;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .cart-item-remove {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 10px;
+            height: 10px;
+            border: 1px solid #1E2321;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        .cart-item-remove:hover {
+            background: #1E2321;
+        }
+
+        .cart-item-content {
+            display: flex;
+            gap: 10px;
+        }
+
+        .cart-item-image {
+            width: 80px;
+            height: 80px;
+            min-width: 80px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .cart-item-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .cart-item-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .cart-item-name {
+            font-size: 18px;
+            font-weight: 500;
+            font-family: 'EB Garamond', serif;
+        }
+
+        .cart-item-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 10px;
+        }
+
+        .quantity-display {
+            padding: 5px 10px;
+            border: 1px solid rgba(30, 35, 33, 0.50);
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: 500;
+            font-family: 'EB Garamond', serif;
+        }
+
+        .cart-item-price {
+            text-align: right;
+        }
+
+        .cart-item-price-each {
+            color: rgba(129, 127, 117, 0.80);
+            font-size: 14px;
+            font-weight: 500;
+            font-family: 'EB Garamond', serif;
+        }
+
+        .cart-item-price-total {
+            font-size: 18px;
+            font-weight: 500;
+            font-family: 'EB Garamond', serif;
+        }
+
+        .cart-item-options {
+            margin-top: 10px;
+            font-size: 14px;
+            font-family: 'EB Garamond', serif;
+        }
+
+        /* Totals */
+        .order-totals {
+            margin-top: 30px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-family: 'EB Garamond', serif;
+        }
+
+        .order-total {
+            padding-top: 30px;
+            border-top: 0.5px solid #1E2321;
+            display: flex;
+            justify-content: space-between;
+            font-size: 24px;
+            font-weight: 500;
+            font-family: 'EB Garamond', serif;
+        }
+
+        /* Tax Details */
+        .tax-details {
+            margin-top: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .custom-checkout-container {
+                padding: 20px 30px;
+            }
+            
+            .checkout-content {
+                flex-direction: column;
+            }
+            
+            .checkout-sidebar {
+                width: 100%;
+                max-width: 687px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .custom-checkout-container {
+                padding: 15px;
+            }
+            
+            .checkout-header {
+                flex-direction: column;
+                height: auto;
+                gap: 15px;
+            }
+            
+            .checkout-main,
+            .checkout-sidebar {
+                padding: 20px 15px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+    
+    <!-- Foxy Styles - Load after custom styles -->
+    {% for css_file_href in config.css_files %}
+        <link href="{{ css_file_href }}" rel="stylesheet" media="all">
+    {% endfor %}
+    
+    <!-- FC header content -->
+    {{ fc_header_content|raw }}
+</head>
+<body data-fc-context='{"checkout":true}'>
+    <div id="fc">
+        <!-- Our Custom Checkout -->
+        <div class="custom-checkout-container">
+            <!-- Header -->
+            <header class="checkout-header">
+                <a href="{{ config.store_url|default('/') }}" class="logo">
+                    {% if config.store_logo %}
+                        <img src="{{ config.store_logo }}" alt="{{ config.store_name }}">
+                    {% else %}
+                        <span class="logo-text">FOUR RIVERS SKINCARE</span>
+                    {% endif %}
+                </a>
+                <a href="https://fourriversskincare.com/products" class="all-products-btn">All products</a>
+            </header>
+
+            <!-- Main Content -->
+            <div class="checkout-content">
+                <!-- Main Form -->
+                <div class="checkout-main">
+                    <form id="fc-checkout-form" method="post" action="https://{{ config.store_domain }}/checkout">
+                        <input type="hidden" name="cart" value="checkout">
+                        <input type="hidden" name="{{ session_name }}" value="{{ session_id }}">
+                        
+                        <!-- Contact Information Section -->
+                        <section class="checkout-section">
+                            <div class="section-header">
+                                <h2 class="section-title">Contact Information</h2>
+                            </div>
+                            
+                            <!-- Email Field -->
+                            <div class="form-group">
+                                <label class="form-label" for="customer_email">Email Address *</label>
+                                <input type="email" 
+                                       id="customer_email" 
+                                       name="customer_email" 
+                                       class="form-control" 
+                                       value="{{ customer_email }}"
+                                       required
+                                       data-fc-required
+                                       data-fc-id="customer-email">
+                            </div>
+                            
+                            <!-- Password Field (shown when email exists) -->
+                            <div class="form-group {% if not email_is_found %}hidden{% endif %}" id="existing-customer-password">
+                                <label class="form-label" for="customer_password">Account Found, Enter Password</label>
+                                <input type="password" 
+                                       id="customer_password" 
+                                       name="customer_password" 
+                                       class="form-control"
+                                       value="{{ customer_password }}">
+                            </div>
+                            
+                            <!-- Create Account Option (shown when email doesn't exist) -->
+                            <div class="{% if email_is_found %}hidden{% endif %}" id="new-customer-section">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" 
+                                           id="create_account" 
+                                           name="create_account" 
+                                           value="1"
+                                           {% if create_account %}checked{% endif %}>
+                                    <label for="create_account">Save my address and info for next time.</label>
+                                </div>
+                                
+                                <div class="form-row {% if not create_account %}hidden{% endif %}" id="password-fields">
+                                    <div class="form-group">
+                                        <label class="form-label" for="new_password">Password (optional)</label>
+                                        <input type="password" 
+                                               id="new_password" 
+                                               name="customer_password_new" 
+                                               class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="confirm_password">Confirm Password</label>
+                                        <input type="password" 
+                                               id="confirm_password" 
+                                               name="customer_password_confirm" 
+                                               class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <!-- Shipping Address Section -->
+                        <section class="checkout-section">
+                            <div class="section-header">
+                                <h2 class="section-title">Shipping Address</h2>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="shipping_first_name">First Name *</label>
+                                    <input type="text" 
+                                           id="shipping_first_name" 
+                                           name="shipping_first_name" 
+                                           class="form-control"
+                                           value="{{ shipping_address.first_name }}"
+                                           required
+                                           data-fc-required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="shipping_last_name">Last Name *</label>
+                                    <input type="text" 
+                                           id="shipping_last_name" 
+                                           name="shipping_last_name" 
+                                           class="form-control"
+                                           value="{{ shipping_address.last_name }}"
+                                           required
+                                           data-fc-required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="shipping_company">Company (optional)</label>
+                                <input type="text" 
+                                       id="shipping_company" 
+                                       name="shipping_company" 
+                                       class="form-control"
+                                       value="{{ shipping_address.company }}">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="shipping_address1">Address *</label>
+                                <input type="text" 
+                                       id="shipping_address1" 
+                                       name="shipping_address1" 
+                                       class="form-control"
+                                       value="{{ shipping_address.address1 }}"
+                                       required
+                                       data-fc-required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="shipping_address2">Apartment, suite, etc. (optional)</label>
+                                <input type="text" 
+                                       id="shipping_address2" 
+                                       name="shipping_address2" 
+                                       class="form-control"
+                                       value="{{ shipping_address.address2 }}">
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="shipping_city">City *</label>
+                                    <input type="text" 
+                                           id="shipping_city" 
+                                           name="shipping_city" 
+                                           class="form-control"
+                                           value="{{ shipping_address.city }}"
+                                           required
+                                           data-fc-required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="shipping_region">State/Province *</label>
+                                    <select id="shipping_region" 
+                                            name="shipping_region" 
+                                            class="form-control"
+                                            required
+                                            data-fc-required>
+                                        <option value="">Select State</option>
+                                        {% for code, name in config.regions.US %}
+                                            <option value="{{ code }}" {% if shipping_address.region == code %}selected{% endif %}>{{ name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="shipping_postal_code">Postal Code *</label>
+                                    <input type="text" 
+                                           id="shipping_postal_code" 
+                                           name="shipping_postal_code" 
+                                           class="form-control"
+                                           value="{{ shipping_address.postal_code }}"
+                                           required
+                                           data-fc-required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="shipping_country">Country *</label>
+                                    <select id="shipping_country" 
+                                            name="shipping_country" 
+                                            class="form-control"
+                                            required
+                                            data-fc-required>
+                                        {% for code, name in config.countries %}
+                                            <option value="{{ code }}" {% if shipping_address.country == code or (not shipping_address.country and code == 'US') %}selected{% endif %}>{{ name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Different Billing Address Checkbox -->
+                            <div class="checkbox-group" style="margin-top: 30px;">
+                                <input type="checkbox" 
+                                       id="use_different_addresses" 
+                                       name="use_different_addresses" 
+                                       value="1"
+                                       {% if use_different_addresses %}checked{% endif %}>
+                                <label for="use_different_addresses">Use a different billing address.</label>
+                            </div>
+                        </section>
+                        
+                        <!-- Billing Address Section (Hidden by default) -->
+                        <section class="checkout-section {% if not use_different_addresses %}hidden{% endif %}" id="billing-address-section">
+                            <div class="section-header">
+                                <h2 class="section-title">Billing Address</h2>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="billing_first_name">First Name *</label>
+                                    <input type="text" 
+                                           id="billing_first_name" 
+                                           name="billing_first_name" 
+                                           class="form-control"
+                                           value="{{ billing_address.first_name }}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="billing_last_name">Last Name *</label>
+                                    <input type="text" 
+                                           id="billing_last_name" 
+                                           name="billing_last_name" 
+                                           class="form-control"
+                                           value="{{ billing_address.last_name }}">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="billing_company">Company (optional)</label>
+                                <input type="text" 
+                                       id="billing_company" 
+                                       name="billing_company" 
+                                       class="form-control"
+                                       value="{{ billing_address.company }}">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="billing_address1">Address *</label>
+                                <input type="text" 
+                                       id="billing_address1" 
+                                       name="billing_address1" 
+                                       class="form-control"
+                                       value="{{ billing_address.address1 }}">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="billing_address2">Apartment, suite, etc. (optional)</label>
+                                <input type="text" 
+                                       id="billing_address2" 
+                                       name="billing_address2" 
+                                       class="form-control"
+                                       value="{{ billing_address.address2 }}">
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="billing_city">City *</label>
+                                    <input type="text" 
+                                           id="billing_city" 
+                                           name="billing_city" 
+                                           class="form-control"
+                                           value="{{ billing_address.city }}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="billing_region">State/Province *</label>
+                                    <select id="billing_region" 
+                                            name="billing_region" 
+                                            class="form-control">
+                                        <option value="">Select State</option>
+                                        {% for code, name in config.regions.US %}
+                                            <option value="{{ code }}" {% if billing_address.region == code %}selected{% endif %}>{{ name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="billing_postal_code">Postal Code *</label>
+                                    <input type="text" 
+                                           id="billing_postal_code" 
+                                           name="billing_postal_code" 
+                                           class="form-control"
+                                           value="{{ billing_address.postal_code }}">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="billing_country">Country *</label>
+                                    <select id="billing_country" 
+                                            name="billing_country" 
+                                            class="form-control">
+                                        {% for code, name in config.countries %}
+                                            <option value="{{ code }}" {% if billing_address.country == code or (not billing_address.country and code == 'US') %}selected{% endif %}>{{ name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <!-- Payment Information Section -->
+                        <section class="checkout-section">
+                            <div class="section-header">
+                                <h2 class="section-title">Payment Information</h2>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label" for="cc_number">Card Number *</label>
+                                <input type="text" 
+                                       id="cc_number" 
+                                       name="cc_number" 
+                                       class="form-control"
+                                       value="{{ cc_number }}"
+                                       required
+                                       data-fc-required>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label" for="cc_exp_month">Expiry Month *</label>
+                                    <select id="cc_exp_month" 
+                                            name="cc_exp_month" 
+                                            class="form-control"
+                                            required
+                                            data-fc-required>
+                                        <option value="">Month</option>
+                                        {% for month in config.cc_expiration_months %}
+                                            <option value="{{ month.value }}" {% if cc_exp_month == month.value %}selected{% endif %}>{{ month.label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="cc_exp_year">Expiry Year *</label>
+                                    <select id="cc_exp_year" 
+                                            name="cc_exp_year" 
+                                            class="form-control"
+                                            required
+                                            data-fc-required>
+                                        <option value="">Year</option>
+                                        {% for year in config.cc_expiration_years %}
+                                            <option value="{{ year }}" {% if cc_exp_year == year %}selected{% endif %}>{{ year }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="cc_cvv2">Security Code *</label>
+                                    <input type="text" 
+                                           id="cc_cvv2" 
+                                           name="cc_cvv2" 
+                                           class="form-control"
+                                           value="{{ cc_cvv2 }}"
+                                           maxlength="4"
+                                           required
+                                           data-fc-required>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <!-- Submit Button -->
+                        <div class="checkout-submit">
+                            <button type="submit" class="submit-button" data-fc-id="checkout-submit">
+                                COMPLETE ORDER - {{ total_order|money_format }}
+                            </button>
+                            <p class="security-note">Your payment information is secure and encrypted</p>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Sidebar - Order Summary -->
+                <aside class="checkout-sidebar">
+                    <div class="section-header">
+                        <h2 class="section-title">Order Summary</h2>
+                    </div>
+                    
+                    <div class="order-items-count">
+                        <span>{{ item_count }}</span>
+                        <span>Item{% if item_count != 1 %}s{% endif %} in Your Order</span>
+                    </div>
+                    
+                    <!-- Cart Items -->
+                    <div class="cart-items">
+                        {% for item in items %}
+                        <div class="cart-item" data-fc-item-id="{{ item.id }}">
+                            <button class="cart-item-remove" data-fc-item-remove="{{ item.id }}" aria-label="Remove item"></button>
+                            <div class="cart-item-content">
+                                <div class="cart-item-image">
+                                    {% if item.image %}
+                                        <img src="{{ item.image }}" alt="{{ item.name }}">
+                                    {% else %}
+                                        <img src="https://placehold.co/80x80" alt="{{ item.name }}">
+                                    {% endif %}
+                                </div>
+                                <div class="cart-item-details">
+                                    <div class="cart-item-name">{{ item.name }}</div>
+                                    <div class="cart-item-bottom">
+                                        <div class="quantity-display">{{ item.quantity }}</div>
+                                        <div class="cart-item-price">
+                                            {% if item.quantity > 1 %}
+                                            <div class="cart-item-price-each">${{ item.price_each|number_format(2) }}</div>
+                                            {% endif %}
+                                            <div class="cart-item-price-total">${{ item.price|number_format(2) }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if item.weight > 0 or item.options|length > 0 %}
+                            <div class="cart-item-options">
+                                {% if item.weight > 0 %}
+                                <div>Weight: {{ item.weight }} {{ weight_uom }}</div>
+                                {% endif %}
+                                {% for option in item.options %}
+                                    {% if option.name|lower not in ['slug'] %}
+                                    <div>{{ option.name }}: {{ option.value }}</div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Coupon Code -->
+                    <div class="coupon-section">
+                        <div class="form-group">
+                            <label class="form-label" for="coupon_code">Coupon Code</label>
+                            <div class="coupon-input-group">
+                                <input type="text" 
+                                       id="coupon_code" 
+                                       name="coupon_code" 
+                                       class="form-control"
+                                       placeholder="Enter coupon code">
+                                <button type="button" class="coupon-button" onclick="applyCoupon()">Apply</button>
+                            </div>
+                        </div>
+                        
+                        {% if coupons|length > 0 %}
+                        <div class="applied-coupons">
+                            {% for code, coupon in coupons %}
+                            <div class="applied-coupon">
+                                <span>{{ code }}: -{{ coupon.amount|money_format }}</span>
+                                <span class="remove-coupon" onclick="removeCoupon('{{ code }}')">[Remove]</span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Order Totals -->
+                    <div class="order-totals">
+                        <div class="total-row">
+                            <span>Subtotal:</span>
+                            <span data-fc-id="subtotal">${{ total_item_price|number_format(2) }}</span>
+                        </div>
+                        
+                        <div class="total-row">
+                            <span>Shipping:</span>
+                            <span data-fc-id="shipping">${{ total_shipping|number_format(2) }}</span>
+                        </div>
+                        
+                        {% if total_tax > 0 %}
+                        <div style="margin-bottom: 20px;">
+                            <div style="font-size: 20px; margin-bottom: 10px;">Tax:</div>
+                            <div class="total-row" style="font-size: 20px;">
+                                <span style="margin-left: 20px;">{% if shipping_address.region %}{{ shipping_address.region }} Tax{% else %}Tax{% endif %}</span>
+                                <span data-fc-id="tax">${{ total_tax|number_format(2) }}</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="order-total">
+                            <span>Total:</span>
+                            <span data-fc-id="total">${{ total_order|number_format(2) }}</span>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+        
+        <!-- Hidden container for Foxy's required includes -->
+        <div style="display: none;">
+            {% include 'svg.inc.twig' %}
+            {% import "utils.inc.twig" as utils %}
+            {% embed 'checkout.inc.twig' %}
+            {% endembed %}
+        </div>
+    </div>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle email field changes
+            const emailField = document.getElementById('customer_email');
+            const existingPasswordSection = document.getElementById('existing-customer-password');
+            const newCustomerSection = document.getElementById('new-customer-section');
+            
+            if (emailField) {
+                emailField.addEventListener('blur', function() {
+                    // This would normally trigger Foxy's email checking
+                    if (typeof FC !== 'undefined' && FC.client && FC.client.checkEmail) {
+                        FC.client.checkEmail();
+                    }
+                });
+            }
+            
+            // Handle create account checkbox
+            const createAccountCheckbox = document.getElementById('create_account');
+            const passwordFields = document.getElementById('password-fields');
+            
+            if (createAccountCheckbox && passwordFields) {
+                createAccountCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        passwordFields.classList.remove('hidden');
+                    } else {
+                        passwordFields.classList.add('hidden');
+                    }
+                });
+            }
+            
+            // Handle billing address toggle
+            const billingToggle = document.getElementById('use_different_addresses');
+            const billingSection = document.getElementById('billing-address-section');
+            
+            if (billingToggle && billingSection) {
+                billingToggle.addEventListener('change', function() {
+                    if (this.checked) {
+                        billingSection.classList.remove('hidden');
+                        // Make billing fields required
+                        billingSection.querySelectorAll('[name^="billing_"]').forEach(field => {
+                            if (field.name !== 'billing_company' && field.name !== 'billing_address2') {
+                                field.setAttribute('required', '');
+                                field.setAttribute('data-fc-required', '');
+                            }
+                        });
+                    } else {
+                        billingSection.classList.add('hidden');
+                        // Remove required from billing fields
+                        billingSection.querySelectorAll('[name^="billing_"]').forEach(field => {
+                            field.removeAttribute('required');
+                            field.removeAttribute('data-fc-required');
+                        });
+                    }
+                });
+            }
+            
+            // Handle item removal
+            document.querySelectorAll('[data-fc-item-remove]').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const itemId = this.getAttribute('data-fc-item-remove');
+                    if (typeof FC !== 'undefined' && FC.client && FC.client.removeItem) {
+                        FC.client.removeItem(itemId);
+                    } else {
+                        // Fallback: submit form with remove action
+                        const form = document.getElementById('fc-checkout-form');
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'remove_item';
+                        input.value = itemId;
+                        form.appendChild(input);
+                        form.submit();
+                    }
+                });
+            });
+        });
+        
+        // Coupon functions
+        function applyCoupon() {
+            const couponInput = document.getElementById('coupon_code');
+            const couponCode = couponInput.value.trim();
+            
+            if (couponCode) {
+                if (typeof FC !== 'undefined' && FC.client) {
+                    FC.client.request({
+                        url: 'https://{{ config.store_domain }}/cart',
+                        data: {
+                            coupon: couponCode,
+                            output: 'json'
+                        }
+                    });
+                } else {
+                    // Fallback: add to form and submit
+                    const form = document.getElementById('fc-checkout-form');
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'coupon';
+                    input.value = couponCode;
+                    form.appendChild(input);
+                }
+            }
+        }
+        
+        function removeCoupon(code) {
+            if (typeof FC !== 'undefined' && FC.client) {
+                FC.client.request({
+                    url: 'https://{{ config.store_domain }}/cart',
+                    data: {
+                        coupon_remove: code,
+                        output: 'json'
+                    }
+                });
+            }
+        }
+    </script>
+    
+    <!-- FC footer content -->
+    {% include template_from_string(fc_footer_content) %}
+</body>
+</html>
